@@ -29,4 +29,4 @@ git clone https://github.com/dotcloud/docker.git
 cd $GOPATH/src/github.com/dotcloud/docker
 go get -v github.com/dotcloud/docker/...
 
-sudo ln -s $GOPATH/bin/docker /usr/local/bin/docker
+ln -s $GOPATH/bin/docker /usr/local/bin/docker
