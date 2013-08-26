@@ -22,7 +22,7 @@ apt-get update -qq
 apt-get install -y linux-image-extra-`uname -r`
 
 wget -O - http://nodejs.org/dist/v0.8.23/node-v0.8.23-linux-x64.tar.gz | tar -C /usr/local/ --strip-components=1 -zxv
-wget -O - https://go.googlecode.com/files/go1.1.2.linux-amd64.tar.gz | tar -C $HOME --strip-components=1 -zxv
+wget -O - https://go.googlecode.com/files/go1.1.2.linux-amd64.tar.gz | tar -C $HOME/go/ --strip-components=1 -zxv
 echo "export GOROOT=\$HOME/go" >> ~/.profile
 echo "PATH=$PATH:\$GOROOT/bin" >> ~/.profile
 source ~/.profile
