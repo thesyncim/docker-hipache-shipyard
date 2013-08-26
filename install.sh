@@ -1,5 +1,4 @@
 #!/bin/bash
-
 HIPACHECONF='
 {
     "server": {
@@ -13,11 +12,50 @@ HIPACHECONF='
     },
     "redisHost": "127.0.0.1",
     "redisPort": 6379
-    
+}'
 
-}
-'
-cd ~
+SUPERVISORDOCKER='
+[program:docker]
+command=/usr/local/bin/docker -H=tcp://127.0.0.1:4243 -d
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+autorestart=true'
+
+SUPERVISORSHIPYARD='
+[program:shipyard]
+priority=10
+directory=/opt/apps/shipyard
+command=/usr/local/bin/uwsgi
+    --http-socket 0.0.0.0:8000
+    -p 4
+    -b 32768
+    -T
+    --master
+    --max-requests 5000
+    -H /opt/ve/shipyard
+    --static-map /static=/opt/apps/shipyard/static
+    --static-map /static=/opt/ve/shipyard/lib/python2.7/site-packages/django/contrib/admin/static
+    --module wsgi:application
+user=root
+autostart=true
+autorestart=true
+
+[program:worker]
+priority=99
+directory=/opt/apps/shipyard
+command=/opt/ve/shipyard/bin/python manage.py rqworker shipyard
+user=root
+autostart=true
+autorestart=true'
+
+SUPERVISORSHIPACHE='
+[program:hipache]
+command=/usr/local/bin/hipache -c /usr/local/lib/node_modules/hipache/config/config.json
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+autorestart=true'
+
+#install required dependencies
 apt-get update 
 apt-get install -y linux-image-extra-`uname -r`
 apt-get install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server supervisor
@@ -34,8 +72,6 @@ echo "PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
 mkdir ~/gocode
 source ~/.profile
 
-
-
 #install docker
 mkdir -p $GOPATH/src/github.com/dotcloud
 cd $GOPATH/src/github.com/dotcloud
@@ -44,14 +80,14 @@ cd $GOPATH/src/github.com/dotcloud/docker
 go get -v github.com/dotcloud/docker/...
 ln -s $GOPATH/bin/docker /usr/local/bin/docker
 echo 'alias docker="docker -H=tcp://127.0.0.1:4243"' >> ~/.profile
-wget -O /etc/supervisor/conf.d/supervisord-docker.conf https://raw.github.com/thesyncim/docker-hipache-shipyard/master/supervisord-docker.conf
+echo $SUPERVISORDOCKER > /etc/supervisor/conf.d/supervisord-docker.conf
 
 #install hipache
 cd $GOPATH/src/github.com/dotcloud
 git clone https://github.com/dotcloud/hipache.git
 cd $GOPATH/src/github.com/dotcloud/hipache
 npm install hipache -g
-wget -O /etc/supervisor/conf.d/supervisord-hipache.conf https://raw.github.com/thesyncim/docker-hipache-shipyard/master/supervisord-hipache.conf
+echo $SUPERVISORSHIPACHE > /etc/supervisor/conf.d/supervisord-hipache.conf
 echo $HIPACHECONF > /usr/local/lib/node_modules/hipache/config/config.json
 
 #install shipyard
@@ -67,4 +103,4 @@ sudo /opt/ve/shipyard/bin/pip install -r /opt/apps/shipyard/requirements.txt
 cd /opt/apps/shipyard && sudo /opt/ve/shipyard/bin/python manage.py syncdb --noinput
 cd /opt/apps/shipyard && sudo /opt/ve/shipyard/bin/python manage.py migrate
 cd /opt/apps/shipyard && sudo /opt/ve/shipyard/bin/python manage.py update_admin_user --username=admin --password=shipyard
-wget -O /etc/supervisor/conf.d/supervisord-shipyard.conf https://raw.github.com/thesyncim/docker-hipache-shipyard/master/supervisord-shipyard.conf
+echo $SUPERVISORSHIPYARD > /etc/supervisor/conf.d/supervisord-shipyard.conf
