@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HIPACHECONF="
+HIPACHECONF='
 {
     "server": {
         "accessLog": "/var/log/hipache_access.log",
@@ -16,7 +16,7 @@ HIPACHECONF="
     
 
 }
-"
+'
 
 
 
