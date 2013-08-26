@@ -17,7 +17,7 @@ HIPACHECONF='
 #install required dependencies
 apt-get update 
 apt-get install -y linux-image-extra-`uname -r`
-apt-get install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server supervisor
+apt-get install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev git-core supervisor
 
 #install node
 wget -O - http://nodejs.org/dist/v0.8.23/node-v0.8.23-linux-x64.tar.gz | tar -C /usr/local/ --strip-components=1 -zxv
@@ -55,7 +55,6 @@ git clone https://github.com/dotcloud/hipache.git
 cd $GOPATH/src/github.com/dotcloud/hipache
 npm install hipache -g
 echo $HIPACHECONF > /usr/local/lib/node_modules/hipache/config/config.json
-
 SUPERVISORSHIPACHE=/etc/supervisor/conf.d/supervisord-hipache.conf
 cat << EOF >> $SUPERVISORSHIPACHE
 [program:hipache]
@@ -64,6 +63,7 @@ stdout_logfile=/var/log/supervisor/%(program_name)s.log
 stderr_logfile=/var/log/supervisor/%(program_name)s.log
 autorestart=true
 EOF
+
 #install shipyard
 sudo easy_install pip
 sudo pip install virtualenv
@@ -77,7 +77,6 @@ sudo /opt/ve/shipyard/bin/pip install -r /opt/apps/shipyard/requirements.txt
 cd /opt/apps/shipyard && sudo /opt/ve/shipyard/bin/python manage.py syncdb --noinput
 cd /opt/apps/shipyard && sudo /opt/ve/shipyard/bin/python manage.py migrate
 cd /opt/apps/shipyard && sudo /opt/ve/shipyard/bin/python manage.py update_admin_user --username=admin --password=shipyard
-
 SUPERVISORSHIPYARD=/etc/supervisor/conf.d/supervisord-shipyard.conf
 cat << EOF >> $SUPERVISORSHIPYARD
 [program:docker]
@@ -96,9 +95,10 @@ command=/usr/local/bin/uwsgi
     --static-map /static=/opt/ve/shipyard/lib/python2.7/site-packages/django/contrib/admin/static
     --module wsgi:application
 user=root
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
 autostart=true
 autorestart=true
-
 [program:worker]
 priority=99
 directory=/opt/apps/shipyard
@@ -106,6 +106,62 @@ command=/opt/ve/shipyard/bin/python manage.py rqworker shipyard
 user=root
 autostart=true
 autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF
+
+#install redis
+apt-get install -y redis-server
+update-rc.d redis-server disable
+SUPERVISORREDIS=/etc/supervisor/conf.d/supervisord-redis.conf
+cat << EOF >> $SUPERVISORREDIS
+[program:redis]
+command=/usr/bin/redis-server  /etc/redis/redis.conf
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF
+REDISCONF=/etc/redis/redis.conf
+cat << EOF >> $REDISCONF
+daemonize no
+pidfile /var/run/redis/redis-server.pid
+port 6379
+bind 127.0.0.1
+timeout 0
+loglevel notice
+logfile /var/log/redis/redis-server.log
+databases 16
+save 900 1
+save 300 10
+save 60 10000
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+dir /var/lib/redis
+slave-serve-stale-data yes
+slave-read-only yes
+slave-priority 100
+appendonly no
+appendfsync everysec
+o-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+lua-time-limit 5000
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+set-max-intset-entries 512
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
 EOF
 
 supervisorctl reread
