@@ -108,3 +108,6 @@ autostart=true
 autorestart=true
 EOF
 
+supervisorctl reread
+supervisorctl update
+
