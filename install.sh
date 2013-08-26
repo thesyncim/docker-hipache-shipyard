@@ -48,7 +48,6 @@ cp config/config_dev.json /usr/local/lib/node_modules/hipache/config/config_dev.
 cp config/config_test.json /usr/local/lib/node_modules/hipache/config/config_test.json
 cp config/config.json /usr/local/lib/node_modules/hipache/config/config.json
 
-//install shipyard
 sudo easy_install pip
 sudo pip install virtualenv
 sudo pip install uwsgi
