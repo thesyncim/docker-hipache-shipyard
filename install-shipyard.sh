@@ -18,7 +18,7 @@ echo "export GOPATH=\$HOME/gocode" >> ~/.profile
 echo "PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
 source ~/.profile
 
-apt-get  install -y lxc curl xz-utils mercurial git apt-get install -y python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server
+apt-get  install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server
 
 
 mkdir -p $GOPATH/src/github.com/dotcloud
