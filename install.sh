@@ -36,7 +36,7 @@ source ~/.profile
 mkdir ~/gocode
 echo "export GOPATH=\$HOME/gocode" >> ~/.profile
 echo "PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
-echo "alias docker="docker -H="tcp://127.0.0.1:4243""" >> ~/.profile
+echo 'alias docker="docker -H=tcp://127.0.0.1:4243"' >> ~/.profile
 source ~/.profile
 
 apt-get  install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server supervisor
