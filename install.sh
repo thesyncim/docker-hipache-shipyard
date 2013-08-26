@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd ~
 apt-get update -qq
 apt-get install -y linux-image-extra-`uname -r`
 
@@ -17,7 +18,14 @@ echo "export GOPATH=\$HOME/gocode" >> ~/.profile
 echo "PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
 source ~/.profile
 
-apt-get  install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server
+apt-get  install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server supervisor
+
+ 
+cp supervisord-docker.conf /etc/supervisor/conf.d/supervisord-docker.conf
+cp supervisord-hipache.conf /etc/supervisor/conf.d/supervisord-hipache.conf
+cp supervisord-shipyard.conf /etc/supervisor/conf.d/supervisord-shipyard.conf
+
+
 
 
 mkdir -p $GOPATH/src/github.com/dotcloud
@@ -37,8 +45,7 @@ cd $GOPATH/src/github.com/dotcloud
 git clone https://github.com/dotcloud/hipache.git
 cd $GOPATH/src/github.com/dotcloud/hipache
 npm install hipache -g
-mkdir -p /var/log/supervisor
-cp supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 cp config/config_dev.json /usr/local/lib/node_modules/hipache/config/config_dev.json
 cp config/config_test.json /usr/local/lib/node_modules/hipache/config/config_test.json
 cp config/config.json /usr/local/lib/node_modules/hipache/config/config.json
