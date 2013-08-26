@@ -145,7 +145,7 @@ slave-read-only yes
 slave-priority 100
 appendonly no
 appendfsync everysec
-o-appendfsync-on-rewrite no
+no-appendfsync-on-rewrite no
 auto-aof-rewrite-percentage 100
 auto-aof-rewrite-min-size 64mb
 lua-time-limit 5000
