@@ -1,6 +1,5 @@
 #!/bin/bash
 
-cd ~
 apt-get update -qq
 apt-get install -y linux-image-extra-`uname -r`
 
