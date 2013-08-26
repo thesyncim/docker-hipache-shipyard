@@ -20,12 +20,9 @@ source ~/.profile
 
 apt-get  install -y lxc curl xz-utils mercurial git python-dev python-setuptools libxml2-dev libxslt-dev libmysqlclient-dev  git-core redis-server supervisor
 
- 
-cp supervisord-docker.conf /etc/supervisor/conf.d/supervisord-docker.conf
-cp supervisord-hipache.conf /etc/supervisor/conf.d/supervisord-hipache.conf
-cp supervisord-shipyard.conf /etc/supervisor/conf.d/supervisord-shipyard.conf
-
-
+wget -O /etc/supervisor/conf.d/supervisord-docker.conf https://raw.github.com/thesyncim/docker-hipache-shipyard/master/supervisord-docker.conf
+wget -O /etc/supervisor/conf.d/supervisord-hipache.conf https://raw.github.com/thesyncim/docker-hipache-shipyard/master/supervisord-hipache.conf
+wget -O /etc/supervisor/conf.d/supervisord-shipyard.conf https://raw.github.com/thesyncim/docker-hipache-shipyard/master/supervisord-shipyard.conf
 
 
 mkdir -p $GOPATH/src/github.com/dotcloud
