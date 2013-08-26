@@ -1,5 +1,25 @@
 #!/bin/bash
 
+HIPACHECONF="
+{
+    "server": {
+        "accessLog": "/var/log/hipache_access.log",
+        "port": 80,
+        "workers": 5,
+        "maxSockets": 100,
+        "deadBackendTTL": 30,
+        "address": ["127.0.0.1"],
+        "address6": ["::1"]
+    },
+    "redisHost": "127.0.0.1",
+    "redisPort": 6379
+    
+
+}
+"
+
+
+
 cd ~
 apt-get update -qq
 apt-get install -y linux-image-extra-`uname -r`
@@ -44,9 +64,9 @@ git clone https://github.com/dotcloud/hipache.git
 cd $GOPATH/src/github.com/dotcloud/hipache
 npm install hipache -g
 
-cp config/config_dev.json /usr/local/lib/node_modules/hipache/config/config_dev.json
-cp config/config_test.json /usr/local/lib/node_modules/hipache/config/config_test.json
-cp config/config.json /usr/local/lib/node_modules/hipache/config/config.json
+
+echo $HIPACHECONF > /usr/local/lib/node_modules/hipache/config/config.json
+
 
 sudo easy_install pip
 sudo pip install virtualenv
