@@ -25,9 +25,9 @@ wget -O - http://nodejs.org/dist/v0.8.23/node-v0.8.23-linux-x64.tar.gz | tar -C 
 #install go 
 mkdir $HOME/go && wget -O - https://go.googlecode.com/files/go1.1.2.linux-amd64.tar.gz | tar -C $HOME/go/ --strip-components=1 -zxv
 echo "export GOROOT=\$HOME/go" >> ~/.profile
-echo "PATH=$PATH:\$GOROOT/bin" >> ~/.profile
+echo "export PATH=$PATH:\$GOROOT/bin" >> ~/.profile
 echo "export GOPATH=\$HOME/gocode" >> ~/.profile
-echo "PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
+echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
 mkdir ~/gocode
 source ~/.profile
 
